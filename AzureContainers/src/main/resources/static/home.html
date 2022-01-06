@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script
+	src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+<script>
+	$(document).ready(function() {
+		$("button").click(function() {
+
+		 
+			var api = "http://localhost:8080/blob/getrootfolders";
+		 
+			$.ajax({
+				url : api,
+				method : 'GET',
+				cache : false,
+				type : "text/json"
+			}).done(function(evt) {
+				// Disable button
+				$("button").prop('disabled', true);
+				// Set timeout for lazy loading
+				setTimeout(function() {
+					var result = JSON.parse(evt);
+					var html = "";
+					html = '<table><tr>Root Folders</tr>';
+					 
+					
+						Object.entries(result).forEach(([key, value]) => {
+							html += '<tr><td><a href="#" onclick="getsubfolders(\'' + value + '\')">' + value + '</a></td></tr>';
+					//	alert(`${key} ${value}`);
+						
+					});
+					html += '</table>';
+					 
+					$("#rootfoldersDiv").html(html)
+				});
+			});
+		});
+		
+	});
+	
+	function getsubfolders(rootfolder) {
+		 
+
+		var api = "http://localhost:8080/blob/getsubfolders/" + rootfolder;
+		 
+		 $.ajax({
+			 url : api,
+			 method : 'GET',
+			 cache : false,
+			 type : "text/json"
+		 }).done(function(evt) {
+			 
+			 // Set timeout for lazy loading
+			 setTimeout(function() {
+				 var result = JSON.parse(evt);
+				 var html = "";
+				 html = '<table><tr>Sub Folders in ' +rootfolder +'</tr>';
+				 $("#subfoldersDiv").html("");			 
+					 Object.entries(result).forEach(([key, value]) => {
+						 html += '<tr><td><a href="#" onclick="getfiles(\'' + value + '\')">' + value + '</a></td></tr>';
+				 //	alert(`${key} ${value}`);
+					 
+				 });
+				 html += '</table>';
+				  
+				 $("#subfoldersDiv").html(html)
+				 html = "";
+			 });
+		 });
+		return false;
+	}
+
+	function getfiles(subfolder) {
+		 
+		alert('getfiles called');
+
+		var api = "http://localhost:8080/blob/getfiles/" + subfolder;
+		
+		alert(subfolder);
+		
+		 $.ajax({
+			 url : api,
+			 method : 'GET',
+			 cache : false,
+			 type : "text/json"
+		 }).done(function(evt) {
+			 
+			 // Set timeout for lazy loading
+			 setTimeout(function() {
+				 var result = JSON.parse(evt);
+				 var html = "";
+				 html = '<table><tr>Files in ' +rootfolder +'</tr>';
+				 $("#subfoldersDiv").html("");			 
+					 Object.entries(result).forEach(([key, value]) => {
+						 html += '<tr><td><a href="#" onclick="getfilecontent(\'' + value + '\')">' + value + '</a></td></tr>';
+				 //	alert(`${key} ${value}`);
+					 
+				 });
+				 html += '</table>';
+				  
+				 $("#fileslistingDiv").html(html)
+				 html = "";
+			 });
+		 });
+		 
+		 
+		 		return false;
+	}
+
+	
+	function getfilecontent(blobname) {
+	
+		 var api = "http://localhost:8080/blob/getfilecontent/" + blobname;
+		  $("#filecontentDev").html(api)
+				  return false;
+	 }
+
+</script>
+
+<link rel="stylesheet" type="text/css"
+	href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.3/css/bootstrap.min.css">
+</head>
+<body>
+
+	<h2>Display Blob Contents</h2>
+	<button>List root folders</button>
+	<table border="1">
+		<tr>
+			<td>Root Folders</td>
+			<td>Sub Folders</td>
+			<td>CSV Files</td>
+			<td>Blob Contents</td>
+		</tr>
+		<tr>
+			<td valign="top"><div id="rootfoldersDiv"></div></td>
+			<td valign="top"><div id="subfoldersDiv"></div></td>
+			<td valign="top"><div id="fileslistingDiv"></div></td>
+			<td valign="top"><div id="filecontentDev"></div></td>
+		</tr>
+
+	</table>
+
+</body>
+</html>
