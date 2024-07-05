@@ -21,6 +21,7 @@ public class Application {
 	 
 	 	Class.forName("oracle.jdbc.OracleDriver");
 		//Using the Drivermanager to connect. No Spring, or JPA and Spring Data JPA, etc !!
+		//adding a new line to the codde
 		dbConnection = DriverManager.getConnection(url, user, password);
 		
 		PreparedStatement stat = null;
